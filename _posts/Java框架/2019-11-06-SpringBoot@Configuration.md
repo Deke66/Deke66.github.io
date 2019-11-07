@@ -1,0 +1,67 @@
+---
+layout: post
+title: SpringBoot @Configuration
+category: Java框架
+tags: spring boot
+keywords: spring boot
+---
+## onRefresh
+```
+	@Override
+	protected void onRefresh() {
+		super.onRefresh();
+		try {
+			createWebServer();
+		}
+		catch (Throwable ex) {
+			throw new ApplicationContextException("Unable to start web server", ex);
+		}
+	}
+```
+
+## createWebServer
+```
+	private void createWebServer() {
+		WebServer webServer = this.webServer;
+		ServletContext servletContext = getServletContext();
+		if (webServer == null && servletContext == null) {
+			ServletWebServerFactory factory = getWebServerFactory();
+			this.webServer = factory.getWebServer(getSelfInitializer());
+		}
+		else if (servletContext != null) {
+			try {
+				getSelfInitializer().onStartup(servletContext);
+			}
+			catch (ServletException ex) {
+				throw new ApplicationContextException("Cannot initialize servlet context", ex);
+			}
+		}
+		initPropertySources();
+	}
+```
+
+## finishRefresh
+```
+	@Override
+	protected void finishRefresh() {
+		super.finishRefresh();
+		WebServer webServer = startWebServer();
+		if (webServer != null) {
+			publishEvent(new ServletWebServerInitializedEvent(webServer, this));
+		}
+	}
+```
+
+## 	startWebServer
+```
+	private WebServer startWebServer() {
+		WebServer webServer = this.webServer;
+		if (webServer != null) {
+			webServer.start();
+		}
+		return webServer;
+	}
+```
+
+
+
