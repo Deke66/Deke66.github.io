@@ -35,7 +35,7 @@ public interface IMessageQueue {
 
 ```
 public interface IProducer {
-    boolean publishMessage(IMessage message);
+    boolean produce(IMessage message);
 }
 ```
 
