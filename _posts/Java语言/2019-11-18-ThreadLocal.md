@@ -266,8 +266,8 @@ keywords: java,ThreadLocal
 	1. Thread.ThreadLocalMap.key -> ThreadLocal (弱引用）
 	2. Thread.ThreadLocalMap.value -> value （强引用）
 2. 使用注意事项
-	1. value 不使用时及时 remove，避免内存泄漏
-	2. value 对象使用 ThreadLocal 对象存储，并不意味着使用value对象就是线程安全的
+	1. value 不使用及时 remove，可以有效防止内存泄漏
+
 
 
 
