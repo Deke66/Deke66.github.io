@@ -14,7 +14,7 @@ keywords: java,ThreadLocal
         new AtomicInteger();
     private static final int HASH_INCREMENT = 0x61c88647;
 ```
-1. CopyOnWriteArrayList保存元素
+1. 每个 ThreadLocal 对象初始化HashCode，保存在 Thread 中的ThreadLocal对象
 
 ## 内部类 ThreadLocalMap
 
@@ -44,7 +44,7 @@ keywords: java,ThreadLocal
         private int threshold; // Default to 0
 ```
 1. 初始化 table 容量大小为16
-2. threshold 为扩容负载因子，size超过时进行扩容，一般为 size 的2/3
+2. threshold 为扩容负载因子，size超过时进行扩容，一般为 size 的
 
 ### 构造方法
 
@@ -62,7 +62,6 @@ keywords: java,ThreadLocal
 1. 初始化table
 2. 计算落点位置
 3. 设置负载因子
-
 
 
 #### 构造新Map从继承的ThreadLocal
@@ -144,8 +143,12 @@ keywords: java,ThreadLocal
                 rehash();
         }
 ```
-1. 计算hash落点
-2. 
+1. 计算ThreadLocal 对象的hash落点
+2. 从 table 查找key，判断找到的key值是否未空
+	1. 不为空设置值直接返回
+	2. 为空先进行一边value强引用置空，之后再设置值
+3. 检查是否需要扩容
+
 
 ### remove(ThreadLocal<?> key)
 
@@ -257,6 +260,14 @@ keywords: java,ThreadLocal
 ```
 1. 获取线程的 ThreadLocalMap 对象，若为空，则初始化 ThreadLocalMap ， 返回 null 值
 2. 从 ThreadLocalMap 获取 Entry，若 Entry 为空，则初始化 Entry ，放回 null 值
+
+## 小结
+1. 引用关系
+	1. Thread.ThreadLocalMap.key -> ThreadLocal (弱引用）
+	2. Thread.ThreadLocalMap.value -> value （强引用）
+2. 使用注意事项
+	1. value 不使用时及时 remove，避免内存泄漏
+	2. value 对象使用 ThreadLocal 对象存储，并不意味着使用value对象就是线程安全的
 
 
 
